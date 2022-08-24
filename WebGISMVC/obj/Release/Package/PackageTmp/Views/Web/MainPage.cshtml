@@ -1,0 +1,289 @@
+﻿@Styles.Render("~/Content/boot2")
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Viewer</title>
+    @Styles.Render("~/Content/boot2")
+    @Styles.Render("~/Content/OLCSS")
+    @Scripts.Render("~/bundles/OLJS")
+    @Scripts.Render("~/bundles/jquery")
+    
+    <link href="https://cdn.jsdelivr.net/npm/ol-geocoder@latest/dist/ol-geocoder.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        input[type=text] {
+            width: 130px;
+            box-sizing: inherit;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+            background-image: url('https://cdn1.iconfinder.com/data/icons/hawcons/32/698956-icon-111-search-512.png');
+            background-position: 10px 10px;
+            background-repeat: no-repeat;
+            padding: 12px 20px 12px 40px;
+            -webkit-transition: width 0.4s ease-in-out;
+            transition: width 0.4s ease-in-out;
+            height:30px;
+            
+        }
+
+            input[type=text]:focus {
+                width: 100%;
+            }
+    </style>
+
+    <style>
+        body {
+            font-family: "Lato", sans-serif;
+        }
+
+        .sidenav {
+            margin-top:16px;
+            height: 100%;
+            width: 160px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: midnightblue;
+            background-image:url(https://images.unsplash.com/photo-1547499417-61a435d27cb3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTI4fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60);
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+
+            /* Style the sidenav links and the dropdown button */
+            .sidenav a, .dropdown-btn {
+                padding: 6px 8px 6px 16px;
+                text-decoration: none;
+                font-size: 19px;
+                color: #ffffff;
+                display: block;
+                border: inherit;
+                background: none;
+                width: 100%;
+                text-align: left;
+                cursor: pointer;
+                outline: none;
+            }
+
+                /* On mouse-over */
+                .sidenav a:hover, .dropdown-btn:hover,.active:hover {
+                    color:darkgoldenrod;
+                }
+
+        /* Main content */
+        .main {
+            margin-left: 200px; /* Same as the width of the sidenav */
+            font-size: 20px; /* Increased text to enable scrolling */
+            padding: 0px 10px;
+        }
+
+        /* Add an active class to the active dropdown button */
+        .active {
+            background-color: green;
+            color: white;
+        }
+
+        /* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
+        .dropdown-container {
+            display: none;
+            background-color: #262626;
+            padding-left: 8px;
+        }
+
+        /* Optional: Style the caret down icon */
+        .fa-caret-down {
+            float: right;
+            padding-right: 8px; 
+        }
+      
+    </style>
+
+</head>
+
+<body>
+
+    <script src="https://cdn.jsdelivr.net/npm/ol-geocoder"></script>
+
+    <div class="sidenav">
+        <label style="font-size:38px; text-align:center; margin-left:5px;margin-top:-20px; color:burlywood">WebGIS</label>
+        
+        <a href="http://localhost:8080/geoserver/WebGIS/wms?service=WMS&version=1.1.0&request=GetMap&layers=WebGIS%3ACity&bbox=44.047264099121094%2C25.058748245239258%2C63.31745910644536%2C39.7772216796876&width=768&height=586&srs=EPSG%3A4326&styles=&format=image%2Ftiff" style="margin-left:-5px" download>Export Tiff</a>
+        <a href="http://localhost:8080/geoserver/WebGIS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=WebGIS%3AIRANSTORE&maxFeatures=50&outputFormat=SHAPE-ZIP" style="margin-left:-5px;font-size:18px" download>Export SHP</a>
+        <div>
+            @using (Html.BeginForm("report", "Web"))
+            {
+                <button class="active" style="color:aliceblue; font-size:18px; margin-left:7px; background-color:black; margin-top:500px">Statistical Report</button>
+            }
+
+            @using (Html.BeginForm("NewStores", "Web"))
+            {
+                <button class="active" style="color:aliceblue; font-size:18px; margin-left:8px; background-color:black; margin-top:11px">Agency Record</button>
+            }
+        </div>
+    </div>
+
+    <div id="map" class="map" style="width: 92%; height: 100%; position:fixed; margin-bottom:50px;">
+        
+
+    </div>
+
+    @using (Html.BeginForm("search", "Web"))
+            {
+        <div class="search-container" style="position:absolute;font-size: 14px; text-align:left; margin-left:50px; margin-top:10px;">
+
+            <input type="text" placeholder="Search.." name="search">
+            <button type="submit" style="background-color:lightskyblue; opacity:0.7;"><i class="fa fa-search"></i></button>
+
+        </div>
+    }
+
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,Object.assign,Event,URL"></script>
+
+    <script>
+
+        var geocoder = new Geocoder('nominatim', {
+            provider: 'osm', //change it here
+            lang: 'en-US',
+            placeholder: 'Search for ...',
+            targetType: 'text-input',
+            limit: 3,
+            keepOpen: false
+        });
+        
+        @foreach (var lyr in ViewBag.Layers as List<WebGISMVC.Models.Layer>)
+           {
+               if (lyr.IsBaseMap)
+               {
+            <text>
+            var url1='@Html.Raw(lyr.URL)';
+            var BaseLayer = new ol.layer.Tile({
+                source: new @lyr.Source ({
+                    url: url1,
+                }),
+                type:'base',
+                visible:false,
+                title : 'Stamen'
+            });
+
+            </text>
+        }
+        }
+            @foreach (var lyr in ViewBag.Layers as List<WebGISMVC.Models.Layer>)
+        {
+            if (!lyr.IsBaseMap)
+        {
+            if (lyr.Type == WebGISMVC.Models.LayerType.Vector)
+            {
+                <text>
+        var url1='@Html.Raw(lyr.URL)';
+        var title='City';
+                var vLayer = new ol.layer.Vector({
+                    source: new @Html.Raw(lyr.Source) ({
+                        title:"country",
+                        url: url1,
+                        visible:false,
+                        format: new @lyr.Format ()
+                        }),
+                    title: 'City Of Iran',
+
+                });
+
+        </text>
+            }
+        else
+            {
+                <text>
+        var RasterLayer = new ol.layer.Tile({
+            source: new @lyr.Source ({
+                title:"DEM",
+                url: '@Html.Raw(lyr.URL)',
+                
+            }),
+            title: 'DEM Of Iran',
+            visible:false,
+                });
+                
+        </text>
+            }
+        }
+        }
+    var myStyle= {fillColor: "#ff0000"};    
+    var sampleView = new ol.View(
+    {
+    center: [51, 32],
+    zoom: 5,
+    projection: 'EPSG:4326'
+    });
+
+    var OpenStreetMap = new ol.layer.Tile({
+        title: 'OpenStreetMap',
+        type: 'base',
+        visible: false,
+        source: new ol.source.OSM(),
+    });
+
+
+    var OSMHumanitarian = new ol.layer.Tile({
+        type: 'base',
+        source: new ol.source.OSM({
+            url:'http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'
+        
+        }),
+        visible: true,
+        title:'OSMHumanitarian'
+    })
+
+    var slayer = new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: 'http://localhost:8080/geoserver/WebGIS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=WebGIS%3AIRANSTORE&outputFormat=application%2Fjson',
+            format: new ol.format.GeoJSON(),
+        }),
+        visible: false,
+        title: 'Agencies Of Iran',
+       
+    });
+
+    var layer = new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: 'http://localhost:8080/geoserver/WebGIS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=WebGIS%3APROVINCE_IRAN&outputFormat=application%2Fjson',
+            format: new ol.format.GeoJSON(),
+        }),
+        visible: false,
+        title: 'Province of Iran',
+       
+    });
+
+    var stamenTerrain = new ol.layer.Tile({
+        type: 'base',
+        source: new ol.source.XYZ({
+            url:'https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png',
+            attributions: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+        }),
+        visible: false,
+        title:'StamenTerrain'
+
+    })
+
+    var map = new ol.Map({
+        target: 'map',
+        layers: [OpenStreetMap,stamenTerrain, OSMHumanitarian,BaseLayer, vLayer,RasterLayer,layer,slayer],
+    view: sampleView
+    });
+
+
+    //map.addControl(geocoder);
+    //var zoom_slider = new ol.control.ZoomSlider();
+    //map.addControl(zoom_slider);
+    var layerSwitcher = new ol.control.LayerSwitcher();
+    map.addControl(layerSwitcher);
+
+    </script>
+
+</body>
+
+</html>

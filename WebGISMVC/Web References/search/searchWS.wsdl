@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="Search">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="city" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SearchResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SearchResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="NewStore">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="NAME" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AGENTNAME" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="OSTAN" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CITY" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Latitude" type="s:float" />
+            <s:element minOccurs="1" maxOccurs="1" name="Longitude" type="s:float" />
+            <s:element minOccurs="1" maxOccurs="1" name="sale" type="s:float" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="NewStoreResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="NewStoreResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Sales">
+        <s:complexType />
+      </s:element>
+      <s:element name="SalesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SalesResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SaleOnProvince">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Province" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SaleOnProvinceResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SaleOnProvinceResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="SearchSoapIn">
+    <wsdl:part name="parameters" element="tns:Search" />
+  </wsdl:message>
+  <wsdl:message name="SearchSoapOut">
+    <wsdl:part name="parameters" element="tns:SearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="NewStoreSoapIn">
+    <wsdl:part name="parameters" element="tns:NewStore" />
+  </wsdl:message>
+  <wsdl:message name="NewStoreSoapOut">
+    <wsdl:part name="parameters" element="tns:NewStoreResponse" />
+  </wsdl:message>
+  <wsdl:message name="SalesSoapIn">
+    <wsdl:part name="parameters" element="tns:Sales" />
+  </wsdl:message>
+  <wsdl:message name="SalesSoapOut">
+    <wsdl:part name="parameters" element="tns:SalesResponse" />
+  </wsdl:message>
+  <wsdl:message name="SaleOnProvinceSoapIn">
+    <wsdl:part name="parameters" element="tns:SaleOnProvince" />
+  </wsdl:message>
+  <wsdl:message name="SaleOnProvinceSoapOut">
+    <wsdl:part name="parameters" element="tns:SaleOnProvinceResponse" />
+  </wsdl:message>
+  <wsdl:portType name="LoginWSSoap">
+    <wsdl:operation name="Search">
+      <wsdl:input message="tns:SearchSoapIn" />
+      <wsdl:output message="tns:SearchSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="NewStore">
+      <wsdl:input message="tns:NewStoreSoapIn" />
+      <wsdl:output message="tns:NewStoreSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Sales">
+      <wsdl:input message="tns:SalesSoapIn" />
+      <wsdl:output message="tns:SalesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SaleOnProvince">
+      <wsdl:input message="tns:SaleOnProvinceSoapIn" />
+      <wsdl:output message="tns:SaleOnProvinceSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="LoginWSSoap" type="tns:LoginWSSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Search">
+      <soap:operation soapAction="http://tempuri.org/Search" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NewStore">
+      <soap:operation soapAction="http://tempuri.org/NewStore" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Sales">
+      <soap:operation soapAction="http://tempuri.org/Sales" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaleOnProvince">
+      <soap:operation soapAction="http://tempuri.org/SaleOnProvince" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="LoginWSSoap12" type="tns:LoginWSSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Search">
+      <soap12:operation soapAction="http://tempuri.org/Search" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NewStore">
+      <soap12:operation soapAction="http://tempuri.org/NewStore" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Sales">
+      <soap12:operation soapAction="http://tempuri.org/Sales" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaleOnProvince">
+      <soap12:operation soapAction="http://tempuri.org/SaleOnProvince" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="LoginWS">
+    <wsdl:port name="LoginWSSoap" binding="tns:LoginWSSoap">
+      <soap:address location="http://localhost/search/searchWS.asmx" />
+    </wsdl:port>
+    <wsdl:port name="LoginWSSoap12" binding="tns:LoginWSSoap12">
+      <soap12:address location="http://localhost/search/searchWS.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

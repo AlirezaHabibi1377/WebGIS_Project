@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WebGISMVC.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="WebGISMVC_Login_LoginWS" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://localhost/LoginWS/LoginWS.asmx</Value>
+    </Setting>
+    <Setting Name="WebGISMVC_search_LoginWS" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://localhost/search/searchWS.asmx</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
